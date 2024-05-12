@@ -1,0 +1,164 @@
+﻿<script setup>
+import {CButton} from "@coreui/vue/dist/esm/components/button";
+import {computed, defineProps, onMounted, ref} from "vue";
+import axios from "axios";
+
+const props = defineProps(['projectId']);
+
+let functionalBlocks = ref([])
+let ems = ref([])
+
+let f = computed(()=> {
+  return functionalBlocks.value;   
+})
+
+onMounted(() =>{
+  // eslint-disable-next-line no-unused-vars
+  let responseFunctionalBlocks = fetch("https://localhost:44389/api/Schema/GetFunctionalBlocks", {
+    method: 'post',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(props['projectId']),
+  }).then(async response => {
+    const data = await response.json();
+    functionalBlocks.value = data;
+    console.log(data);
+  }).catch(error => {
+    console.log( error);
+    return
+  });
+
+  // eslint-disable-next-line no-unused-vars
+  let responseEms = fetch("https://localhost:44389/api/Ems/GetEmsList", {
+    method: 'post',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(props['projectId']),
+  }).then(async response => {
+    const data = await response.json();
+    ems.value = data;
+    console.log(data);
+    console.log(5);
+  }).catch(error => {
+    console.log( error);
+    return
+  });
+})
+let firstBlock = ref(null );
+let secondBlock = ref(null);
+
+const createEms = function (){
+  let formData = new FormData();
+  formData.append("functionalBlockId1", firstBlock.value);
+  formData.append("functionalBlockId2", secondBlock.value);
+  formData.append("valueEms", inputValue.value);
+  formData.append("projectId", props['projectId']);
+  axios.post("https://localhost:44389/api/Ems/CreateEms", formData,
+      {
+        headers: {
+          "Content-Type": "Multipart / Form-Data"
+        }
+      }).then(response => {
+        ems.value.push(response.data);
+        functionalBlocks.value = functionalBlocks.value.filter(x => x.id !== firstBlock.value && x.id !== secondBlock.value);
+        firstBlock.value = null;
+        secondBlock.value = null;
+        inputValue.value = null;
+      console.log(response)
+  }).catch(error => {
+    console.log(error);
+  });
+}
+
+const deleteEms = function (id){
+  let formData = new FormData();
+  formData.append("emsId", id);
+  
+  // eslint-disable-next-line no-unused-vars
+  let responseEms = fetch("https://localhost:44389/api/Ems/DeleteEmsById", {
+    method: 'delete',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(id),
+  }).then(async response => {
+    const data = await response.json();
+    functionalBlocks.value.push(ems.value.filter(x => x.id === id)[0].functionalBlock1);
+    functionalBlocks.value.push(ems.value.filter(x => x.id === id)[0].functionalBlock2);
+    ems.value = ems.value.filter(x=>x.id !== id);
+    console.log(data);
+  }).catch(error => {
+    console.log( error);
+  });
+}
+
+let inputValue = ref(null)
+</script>
+
+<template>
+  <div class="container" v-if="functionalBlocks.length > 0 || ems.length > 0">
+    <div class="row justify-content-center">
+      <div class="col-3 border">
+        Функциональный блок 1
+      </div>
+      <div class="col-3 border">
+        Функциональный блок 2
+      </div>
+      <div class="col-3 border">
+        Значение
+      </div>
+      <div class="col-1 border">
+        Действие
+      </div>
+    </div>
+    <div class="row justify-content-md-center"  v-if="f.length > 0">
+      <div class="col-3 border">
+        <v-select
+            :options="f.filter(g => g.id !== secondBlock)"
+            :reduce="functionalBlock => functionalBlock.id"
+            label="name"
+            v-model="firstBlock"></v-select >
+      </div>
+      <div class="col-3 border">
+        <v-select
+            :options="f.filter(g => g.id !== firstBlock)"
+            :reduce="functionalBlock => functionalBlock.id"
+            label="name"
+            v-model="secondBlock"></v-select >
+      </div>
+      <div class="col-3 border">
+        <v-select
+            :options="[1,2,3,4,5]"
+            label="name"
+            v-model="inputValue"></v-select >
+      </div>
+      <div class="col-1 border">
+        <CButton 
+            color="secondary" 
+            size="sm" 
+            @click="createEms" 
+            :disabled = "firstBlock == null || secondBlock == null || inputValue ==null"
+        >
+          Добавить
+        </CButton>
+      </div>
+    </div>
+    <div class="row justify-content-center" v-for="item in ems" :key = "item.id">
+      <div class="col-3 border">
+        {{item.functionalBlock1.name}}
+      </div>
+      <div class="col-3 border">
+        {{item.functionalBlock2.name}}
+      </div>
+      <div class="col-3 border">
+        {{item.value}}
+      </div>
+      <div class="col-1 border">
+        <CButton color="secondary" size="sm" @click="deleteEms(item.id)">
+          Удалить
+        </CButton>
+      </div>
+    </div>
+  </div>
+  <h6 v-if="functionalBlocks.length === 0 && ems.length === 0 ">Создайте функциональные блоки во вкладке "Функциональные блоки"</h6>
+</template>
+
+<style scoped>
+
+</style>
