@@ -1,18 +1,30 @@
 ﻿<script setup>
 import {CButton} from "@coreui/vue/dist/esm/components/button";
-import {computed, defineProps, onMounted, ref} from "vue";
+import { defineEmits, defineProps, onMounted, ref, watch} from "vue";
 import axios from "axios";
 
-const props = defineProps(['projectId']);
+const props = defineProps(['projectId', 'isRefreshEms']);
+const emit = defineEmits(['afterLoad']);
+
 
 let functionalBlocks = ref([])
 let ems = ref([])
 
-let f = computed(()=> {
-  return functionalBlocks.value;   
+/*let f = computed(()=> {
+  return functionalBlocks.value.filter(g => g.id !== secondBlock.value)  
+})*/
+watch(props, () =>{
+  if (props["isRefreshEms"] === false) {
+    return
+  }
+  getData();
 })
 
 onMounted(() =>{
+  getData();
+})
+
+function getData() {
   // eslint-disable-next-line no-unused-vars
   let responseFunctionalBlocks = fetch("https://localhost:44389/api/Schema/GetFunctionalBlocks", {
     method: 'post',
@@ -41,7 +53,8 @@ onMounted(() =>{
     console.log( error);
     return
   });
-})
+  emit("afterLoad");
+}
 let firstBlock = ref(null );
 let secondBlock = ref(null);
 
@@ -107,17 +120,17 @@ let inputValue = ref(null)
         Действие
       </div>
     </div>
-    <div class="row justify-content-md-center"  v-if="f.length > 0">
+    <div class="row justify-content-md-center"  v-if="functionalBlocks.length > 0">
       <div class="col-3 border">
         <v-select
-            :options="f.filter(g => g.id !== secondBlock)"
+            :options="functionalBlocks.filter(g => g.id !== secondBlock)"
             :reduce="functionalBlock => functionalBlock.id"
             label="name"
             v-model="firstBlock"></v-select >
       </div>
       <div class="col-3 border">
         <v-select
-            :options="f.filter(g => g.id !== firstBlock)"
+            :options="functionalBlocks.filter(g => g.id !== firstBlock)"
             :reduce="functionalBlock => functionalBlock.id"
             label="name"
             v-model="secondBlock"></v-select >

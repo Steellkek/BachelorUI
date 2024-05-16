@@ -8,7 +8,7 @@
       <CDropdownItem href="#" @click="() => { visibleStaticBackdropUpload  = true }" variant="outline" :disabled= "projectId=== 0">Загрузить файл</CDropdownItem >
     </CDropdownMenu>
   </CDropdown>
-  <CButton>
+  <CButton @click="openStartAlg">
     Запуск
   </CButton>
   <CNav variant="tabs" role="tablist">
@@ -71,11 +71,18 @@
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 4">
       Окно с функциональными блоками
-      <FunctionBlockComponent :projectId = "projectId"></FunctionBlockComponent>
+      <FunctionBlockComponent 
+          :projectId = "projectId" 
+          :refreshFunctional = "refreshFunctional" 
+          @afterLoad = "afterLoad" 
+          @refreshEms = "refreshEms" 
+          @allComponentsInFunctionalBlocks = "allComponentsInFunctionalBlocks"
+      >        
+      </FunctionBlockComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 5">
       Окно с ЭМС
-      <EmsComponent :projectId = "projectId"></EmsComponent>
+      <EmsComponent :projectId = "projectId" :isRefreshEms = "isRefreshEms" @afterLoad = "afterLoad"></EmsComponent>
     </CTabPane>
   </CTabContent>
   <ModalCreateProjectComponent 
@@ -94,6 +101,11 @@
       @closeModal = "closeModal"
       @afterUpload = "afterUpload"
   ></ModalUploadProjectComponent>
+  <ModalStartAlgComponent
+      :visibleStaticBackdropStart = "visibleStaticBackdropStart"
+      :projectId = "projectId"
+      @closeModal = "closeModal"
+  ></ModalStartAlgComponent>
 </template>
 
 <script setup>
@@ -108,12 +120,17 @@ import ModalChoiceProjectComponent from "@/components/ModalChoiceProjectComponen
 import ModalUploadProjectComponent from "@/components/ModalUploadProjectComponent.vue";
 import FunctionBlockComponent from "@/components/FunctionBlockComponent.vue";
 import EmsComponent from "@/components/EmsComponent.vue";
+import ModalStartAlgComponent from "@/components/ModalStartAlgComponent.vue";
 
 let tabPaneActiveKey = ref(1)
 let visibleStaticBackdropCreate = ref(false);
 let visibleStaticBackdropChoice = ref(false);
 let visibleStaticBackdropUpload = ref(false);
+let visibleStaticBackdropStart = ref(false);
 let refreshSchema = ref(false);
+let refreshFunctional = ref(false);
+let isRefreshEms = ref(false);
+let isAllComponentsInFunctionalBlocks = ref(false);
 let NameProject = ref("");
 
 let projectId = ref(0);
@@ -121,18 +138,37 @@ let projectId = ref(0);
 const choiceProject = function (project){
   projectId.value = project.id;
   NameProject.value = project.nameProject;
-  refreshSchema.value = true;
+  afterUpload();
 }
 const afterLoad = function (){
   refreshSchema.value = false;
+  refreshFunctional.value = false;
+  isRefreshEms.value = false;
 }
 const afterUpload = function (){
   refreshSchema.value = true;
+  refreshFunctional.value = true;
+  refreshEms();
+}
+const refreshEms = function (){
+  isRefreshEms.value = true;
 }
 const closeModal = function () {
   visibleStaticBackdropCreate.value = false;
   visibleStaticBackdropChoice.value = false;
   visibleStaticBackdropUpload.value = false;
+  visibleStaticBackdropStart.value = false;
 }
 
+const allComponentsInFunctionalBlocks = function (x){
+  isAllComponentsInFunctionalBlocks.value = x;
+}
+
+const openStartAlg = function (){
+  if (!isAllComponentsInFunctionalBlocks.value){
+    alert("Разместите все элементы по функциональным узлам. Должно быть минимум 2 узла.")
+    return
+  }
+  visibleStaticBackdropStart.value = true;
+}
 </script>

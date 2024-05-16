@@ -1,5 +1,5 @@
 ﻿<script setup>
-import {defineProps, onMounted, ref, watch} from "vue";
+import {defineEmits, defineProps, onMounted, ref, watch} from "vue";
 import {CListGroup, CListGroupItem} from "@coreui/vue/dist/esm/components/list-group";
 import { CFormCheck, CFormInput} from "@coreui/vue/dist/esm/components/form";
 import {CAccordion, CAccordionBody, CAccordionHeader, CAccordionItem} from "@coreui/vue/dist/esm/components/accordion";
@@ -7,7 +7,8 @@ import axios from "axios";
 import {CButton} from "@coreui/vue/dist/esm/components/button";
 
 // eslint-disable-next-line no-unused-vars
-const props = defineProps(['projectId']);
+const props = defineProps(['projectId', 'refreshFunctional']);
+const emit = defineEmits(['afterLoad', 'refreshEms', 'allComponentsInFunctionalBlocks']);
 
 let checkComponents = ref([])
 let startComponents = ref([]);
@@ -20,6 +21,9 @@ onMounted(()=>{
   getFunctionalBlocks();
 })
 watch(props, () =>{
+  if (props["refreshFunctional"] === false) {
+    return
+  }
   getFunctionalBlocks();
 })
 const getFunctionalBlocks = () => {
@@ -32,6 +36,7 @@ const getFunctionalBlocks = () => {
     const data = await response.json();
     startComponents.value = data;
     console.log(data);
+    allComponentsInFunctionalBlocks()
   }).catch(error => {
     console.log( error);
   });
@@ -44,6 +49,8 @@ const getFunctionalBlocks = () => {
     const data = await response.json();
     functionalBlocks.value = data;
     console.log(data);
+    emit("afterLoad");
+    allComponentsInFunctionalBlocks()
   }).catch(error => {
     console.log( error);
   });
@@ -65,7 +72,9 @@ const createFunctionalBlock = function () {
     functionalBlocks.value.push(response.data)
     startComponents.value = startComponents.value.filter(item => !checkComponents.value.includes(item.id));
     checkComponents.value = [];
-    nameFunctionalBlock.value = ""
+    nameFunctionalBlock.value = "";
+    emit("refreshEms");
+    allComponentsInFunctionalBlocks()
   }).catch(error => {
     console.log(error);
   });
@@ -86,9 +95,16 @@ const deleteFunctionalBlock = function (functionalBlockId) {
     console.log(functionalBlock[0]);
     functionalBlock[0].componentsPcb.forEach((x) => startComponents.value.push(x))
     functionalBlocks.value = functionalBlocks.value.filter(item => item.id !== functionalBlockId )
+    emit("refreshEms");
+    allComponentsInFunctionalBlocks()
   }).catch(error => {
     console.log( error);
   });
+}
+
+const allComponentsInFunctionalBlocks = function () {
+  let x = startComponents.value.length === 0 && functionalBlocks.value.length > 1;
+  emit('allComponentsInFunctionalBlocks',x)
 }
 </script>
 
