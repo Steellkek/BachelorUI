@@ -55,47 +55,36 @@ onMounted(()=>{
   cy = window.cy = cytoscape({
     container: document.getElementById('cy'),
 
-    boxSelectionEnabled: false,
-
-    style: [
-      {
-        selector: 'node',
-        css: {
-          'shape': 'rectangle',
-          'content': 'data(id)',
-          'text-valign': 'center',
-          'text-halign': 'center'
-        }
-      },
-      {
-        selector: ':parent',
-        css: {
-          'text-valign': 'top',
-          'text-halign': 'center',
-          'shape': 'round-rectangle',
-          'corner-radius': "10",
-          'padding': 10
-        }
-      },
-      {
-        selector: 'node#e',
-        css: {
-          'corner-radius': "10",
-          'padding': 0
-        }
-      },
-      {
-        selector: 'edge',
-        css: {
-          'curve-style': 'bezier',
-          'target-arrow-shape': 'triangle'
-        }
-      }
-    ],
-    layout: {
-      name: 'preset',
-      padding: 5
-    }
+    elements: [],
+    style: cytoscape.stylesheet()
+        .selector('node')
+        .css({
+          'height': 'data(height)',
+          'width': 'data(width)',
+          'background-fit': 'cover',
+          'border-color': '#000',
+          'border-width': 0,
+          'border-opacity': 0.5,
+          'shape':'rectangle',
+          'background-opacity': 0,
+          'content': 'data(label)',
+          'font-size': '15px',
+        })
+        .selector('edge')
+        .css({
+          'width': 10,
+          'line-color': 'orange',
+          'content': 'data(label)',
+          'font-size': '15px',
+          'color': 'black'
+        })
+        .selector('node')
+        .css({
+    'shape': 'rectangle',
+        'content': 'data(id)',
+        'text-valign': 'center',
+        'text-halign': 'center'
+  })
   });
   loadGraph();
 })
