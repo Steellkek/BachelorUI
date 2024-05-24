@@ -11,6 +11,9 @@
   <CButton @click="openStartAlg">
     Запуск
   </CButton>
+  <CButton @click="downloadSolution">
+    Скачать решение
+  </CButton>
   <CNav variant="tabs" role="tablist">
     <CNavItem>
       <CNavLink
@@ -54,7 +57,7 @@
           :active="tabPaneActiveKey === 5"
           @click="() => {tabPaneActiveKey = 5}"
       >
-        Функциональные блоки
+        ЭМС
       </CNavLink>
     </CNavItem>
   </CNav>
@@ -65,6 +68,7 @@
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 2">
       Окно с платой
+      <PcbWindowComponent   :refreshPcb = "refreshPcb" :project-id = "projectId" @afterLoad = "afterLoad"></PcbWindowComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 3">
       Окно с результатом
@@ -121,7 +125,7 @@ import ModalUploadProjectComponent from "@/components/ModalUploadProjectComponen
 import FunctionBlockComponent from "@/components/FunctionBlockComponent.vue";
 import EmsComponent from "@/components/EmsComponent.vue";
 import ModalStartAlgComponent from "@/components/ModalStartAlgComponent.vue";
-
+import PcbWindowComponent from "@/components/PcbWindowComponent.vue";
 let tabPaneActiveKey = ref(1)
 let visibleStaticBackdropCreate = ref(false);
 let visibleStaticBackdropChoice = ref(false);
@@ -130,6 +134,7 @@ let visibleStaticBackdropStart = ref(false);
 let refreshSchema = ref(false);
 let refreshFunctional = ref(false);
 let isRefreshEms = ref(false);
+let refreshPcb = ref(false);
 let isAllComponentsInFunctionalBlocks = ref(false);
 let NameProject = ref("");
 
@@ -144,11 +149,13 @@ const afterLoad = function (){
   refreshSchema.value = false;
   refreshFunctional.value = false;
   isRefreshEms.value = false;
+  refreshPcb.value = true;
 }
 const afterUpload = function (){
   refreshSchema.value = true;
   refreshFunctional.value = true;
   refreshEms();
+  refreshPcb.value = true;
 }
 const refreshEms = function (){
   isRefreshEms.value = true;
@@ -170,5 +177,20 @@ const openStartAlg = function (){
     return
   }
   visibleStaticBackdropStart.value = true;
+}
+
+const downloadSolution = function (){
+  window.open("https://localhost:44389/api/Solution/download/"+projectId.value);
+  // eslint-disable-next-line no-unused-vars
+/*  let responseComponents = fetch("https://localhost:44389/api/Solution/download", {
+    method: 'post',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(projectId.value),
+  }).then(async response => {
+    const data = await response.json();
+    console.log(data);
+  }).catch(error => {
+    console.log( error);
+  });*/
 }
 </script>

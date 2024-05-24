@@ -1,22 +1,21 @@
 ﻿<script setup>
 import {onMounted, defineProps, watch,defineEmits} from "vue";
 import cytoscape from "cytoscape";
-import {CButton} from "@coreui/vue/dist/esm/components/button";
 // eslint-disable-next-line no-unused-vars
-let cy = null;
-const props = defineProps(['projectId', 'refreshSchema']);
+let cy2 = null;
+const props = defineProps(['projectId', 'refreshPcb']);
 const emit = defineEmits(['afterLoad']);
 watch(props, () =>{
-  if (cy === null || props["refreshSchema"] === false) {
+  if (cy2 === null || props["refreshPcb"] === false) {
     return
   }
   loadGraph();
 })
 
 const loadGraph = function (){
-  cy.remove(cy.elements());
+  cy2.remove(cy2.elements());
   // eslint-disable-next-line no-unused-vars
-  let response = fetch("https://localhost:44389/api/Schema/GetSchema", {
+  let response = fetch("https://localhost:44389/api/Pcb/GetPcb", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
@@ -30,50 +29,53 @@ const loadGraph = function (){
       console.log(error)
     }
     console.log(data);
-    data.componentsPcb.forEach((x) =>
-        cy.add([{group: 'nodes',
-          data: {id: x.designator}}])
+    data.item2.forEach((x) =>
+        cy2.add([{group: 'nodes',
+          data: {
+            id: x.id,
+            width: x.width*5,
+            height: x.height*5
+        }}])
     );
-    for (let i = 0; i < data.connectionsComponent.length;i++){
-      cy.add([{group: 'edges',
+    for (let i = 0; i < data.item3.length;i++){
+      cy2.add([{group: 'edges',
         data: {
           id: 'e' + (i+1),
-          source: data.connectionsComponent[i].componentPcb1.designator,
-          target: data.connectionsComponent[i].componentPcb2.designator,
-          label: data.connectionsComponent[i].countConnection,
+          source: data.item3[i].hardPartPcb1Id,
+          target: data.item3[i].hardPartPcb2Id,
         }
       }])
     }
-    console.log(cy.nodes()[0])
-    cy.layout({name: 'circle'}).run();
-    cy.layout({name: 'circle'}).stop();
+    console.log(cy2.nodes()[0])
+    cy2.layout({name: 'grid'}).run();
+    cy2.layout({name: 'grid'}).stop();
     emit("afterLoad");
   }).catch(error => {
     console.log( error);
   });
 }
-const zoom = function (){
-  cy.layout({name: 'circle'}).run();
-  cy.layout({name: 'circle'}).stop();
-}
-
 onMounted(()=>{
-  cy = window.cy = cytoscape({
-    container: document.getElementById('cy'),
+  cy2 = window.cy2 = cytoscape({
+    container: document.getElementById('cy2'),
 
     elements: [],
     style: cytoscape.stylesheet()
         .selector('node')
         .css({
-          'content': 'data(id)',
+          'shape':'rectangle',
+          'height': 'data(height)',
+          'width': 'data(width)',
+          'background-opacity': 1,
+          'background-color': 'green',
+          'text-wrap':"wrap"
         })
         .selector('edge')
         .css({
           'width': 10,
-          'line-color': 'black',
+          'line-color': 'orange',
           'content': 'data(label)',
           'font-size': '15px',
-          'color': 'white'
+          'color': 'black'
         })
   });
   loadGraph();
@@ -81,12 +83,11 @@ onMounted(()=>{
 </script>
 
 <template>
-  <div id="cy" ></div>
-  <CButton @click ="zoom">Восстановить</CButton>
+  <div id="cy2" ></div>
 </template>
 
 <style scoped>
-#cy {
+#cy2 {
   position: fixed;
   left: 25%;
   color: #d3d3d3;

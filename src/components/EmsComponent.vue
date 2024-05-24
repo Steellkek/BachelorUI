@@ -10,9 +10,10 @@ const emit = defineEmits(['afterLoad']);
 let functionalBlocks = ref([])
 let ems = ref([])
 
-/*let f = computed(()=> {
-  return functionalBlocks.value.filter(g => g.id !== secondBlock.value)  
-})*/
+// eslint-disable-next-line no-unused-vars
+let f = function (id) {
+  return ems.value.filter( x=> x.functionalBlock1Id === id || x.functionalBlock1Id === id).map(function(e){return e.id})
+}
 watch(props, () =>{
   if (props["isRefreshEms"] === false) {
     return
@@ -71,7 +72,6 @@ const createEms = function (){
         }
       }).then(response => {
         ems.value.push(response.data);
-        functionalBlocks.value = functionalBlocks.value.filter(x => x.id !== firstBlock.value && x.id !== secondBlock.value);
         firstBlock.value = null;
         secondBlock.value = null;
         inputValue.value = null;
