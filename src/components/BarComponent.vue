@@ -45,6 +45,15 @@
     <CNavItem>
       <CNavLink
           href="javascript:void(0);"
+          :active="tabPaneActiveKey === 6"
+          @click="() => {tabPaneActiveKey = 6}"
+      >
+        Компоненты
+      </CNavLink>
+    </CNavItem>
+    <CNavItem>
+      <CNavLink
+          href="javascript:void(0);"
           :active="tabPaneActiveKey === 4"
           @click="() => {tabPaneActiveKey = 4}"
       >
@@ -63,19 +72,15 @@
   </CNav>
   <CTabContent v-if="projectId!==0">
     <CTabPane role="tabpanel" aria-labelledby="home-tab" :visible="tabPaneActiveKey === 1">
-      Окно со схемой
       <ScemaWindowComponent :refreshSchema = "refreshSchema" :projectId = "projectId" @afterLoad = "afterLoad"></ScemaWindowComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 2">
-      Окно с платой
       <PcbWindowComponent   :refreshPcb = "refreshPcb" :project-id = "projectId" @afterLoad = "afterLoad"></PcbWindowComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 3">
-      Окно с результатом
       <SolutionWindowComponent :refreshSchema = "refreshSchema" :projectId = "projectId" @afterLoad = "afterLoad"></SolutionWindowComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 4">
-      Окно с функциональными блоками
       <FunctionBlockComponent 
           :projectId = "projectId" 
           :refreshFunctional = "refreshFunctional" 
@@ -86,8 +91,10 @@
       </FunctionBlockComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 5">
-      Окно с ЭМС
       <EmsComponent :projectId = "projectId" :isRefreshEms = "isRefreshEms" @afterLoad = "afterLoad"></EmsComponent>
+    </CTabPane>
+    <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 6">
+      <ComponentWindowComponent :projectId = "projectId" :isRefreshEms = "isRefreshEms" @afterLoad = "afterLoad"></ComponentWindowComponent>
     </CTabPane>
   </CTabContent>
   <ModalCreateProjectComponent 
@@ -128,6 +135,7 @@ import EmsComponent from "@/components/EmsComponent.vue";
 import ModalStartAlgComponent from "@/components/ModalStartAlgComponent.vue";
 import PcbWindowComponent from "@/components/PcbWindowComponent.vue";
 import SolutionWindowComponent from "@/components/SolutionWindowComponent.vue";
+import ComponentWindowComponent from "@/components/ComponentWindowComponent.vue";
 let tabPaneActiveKey = ref(1)
 let visibleStaticBackdropCreate = ref(false);
 let visibleStaticBackdropChoice = ref(false);

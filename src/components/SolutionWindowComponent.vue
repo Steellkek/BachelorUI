@@ -178,7 +178,7 @@ onMounted(()=>{
           'border-opacity': 0.5,
           'background-opacity': 0,
           'background-width': 100,
-          'background-heigth': 100,
+          'background-height': 100,
           'font-size': '10px',
         })
         .selector('node[img="chip"]')
