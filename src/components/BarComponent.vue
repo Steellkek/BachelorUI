@@ -72,6 +72,7 @@
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 3">
       Окно с результатом
+      <SolutionWindowComponent :refreshSchema = "refreshSchema" :projectId = "projectId" @afterLoad = "afterLoad"></SolutionWindowComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 4">
       Окно с функциональными блоками
@@ -126,6 +127,7 @@ import FunctionBlockComponent from "@/components/FunctionBlockComponent.vue";
 import EmsComponent from "@/components/EmsComponent.vue";
 import ModalStartAlgComponent from "@/components/ModalStartAlgComponent.vue";
 import PcbWindowComponent from "@/components/PcbWindowComponent.vue";
+import SolutionWindowComponent from "@/components/SolutionWindowComponent.vue";
 let tabPaneActiveKey = ref(1)
 let visibleStaticBackdropCreate = ref(false);
 let visibleStaticBackdropChoice = ref(false);

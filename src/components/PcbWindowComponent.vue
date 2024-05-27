@@ -1,6 +1,7 @@
 ﻿<script setup>
 import {onMounted, defineProps, watch,defineEmits} from "vue";
 import cytoscape from "cytoscape";
+import {CButton} from "@coreui/vue/dist/esm/components/button";
 // eslint-disable-next-line no-unused-vars
 let cy2 = null;
 const props = defineProps(['projectId', 'refreshPcb']);
@@ -54,6 +55,10 @@ const loadGraph = function (){
     console.log( error);
   });
 }
+const zoom = function (){
+  cy2.layout({name: 'grid'}).run();
+  cy2.layout({name: 'grid'}).stop();
+}
 onMounted(()=>{
   cy2 = window.cy2 = cytoscape({
     container: document.getElementById('cy2'),
@@ -84,6 +89,7 @@ onMounted(()=>{
 
 <template>
   <div id="cy2" ></div>
+  <CButton @click ="zoom">Восстановить</CButton>
 </template>
 
 <style scoped>

@@ -1,7 +1,9 @@
 ﻿<script setup>
 import {onMounted, defineProps, watch,defineEmits} from "vue";
 import cytoscape from "cytoscape";
+import fcose from 'cytoscape-fcose';
 import {CButton} from "@coreui/vue/dist/esm/components/button";
+cytoscape.use( fcose );
 // eslint-disable-next-line no-unused-vars
 let cy = null;
 const props = defineProps(['projectId', 'refreshSchema']);
