@@ -1,5 +1,5 @@
 ﻿<script setup>
-import {onMounted, defineProps, watch,defineEmits} from "vue";
+import {onMounted, defineProps, watch, defineEmits, ref} from "vue";
 import cytoscape from "cytoscape";
 import {CButton} from "@coreui/vue/dist/esm/components/button";
 // eslint-disable-next-line no-unused-vars
@@ -13,6 +13,8 @@ watch(props, () =>{
   loadGraph();
 })
 
+const visible = ref(true);
+
 const loadGraph = function (){
   cy2.remove(cy2.elements());
   // eslint-disable-next-line no-unused-vars
@@ -23,6 +25,7 @@ const loadGraph = function (){
   }).then(async response => {
     const data = await response.json();
 
+    visible.value = data.item1 !== null;
     // check for error response
     if (!response.ok) {
       // get error message from body or default to response statusText
@@ -30,12 +33,14 @@ const loadGraph = function (){
       console.log(error)
     }
     console.log(data);
+    let g= 1;
     data.item2.forEach((x) =>
         cy2.add([{group: 'nodes',
           data: {
             id: x.id,
             width: x.width*5,
-            height: x.height*5
+            height: x.height*5,
+            label: g++ +'\n'+x.height+'×'+x.width,
         }}])
     );
     for (let i = 0; i < data.item3.length;i++){
@@ -72,7 +77,8 @@ onMounted(()=>{
           'width': 'data(width)',
           'background-opacity': 1,
           'background-color': 'green',
-          'text-wrap':"wrap"
+          'text-wrap':"wrap",
+          'content': 'data(label)',
         })
         .selector('edge')
         .css({
@@ -88,18 +94,24 @@ onMounted(()=>{
 </script>
 
 <template>
-  <div id="cy2" ></div>
-  <CButton @click ="zoom">Восстановить</CButton>
+  <div class="row justify-content-center" v-if="visible">
+    <div class="col-6">
+      <div  id="cy2"/>
+    </div>
+    <div class="col-3">
+      <CButton @click ="zoom" color="primary" variant="outline">Восстановить</CButton>
+    </div>
+  </div>
+  <div v-if="!visible" >
+    Загрузите файл с проектом!
+  </div>
 </template>
 
 <style scoped>
 #cy2 {
-  position: fixed;
-  left: 25%;
   color: #d3d3d3;
   font: 12pt arial;
-  height: 600px;
-  width: 600px;
+  height: 650px;
   border: 1px solid #444444;
   background-color: #ffffff;
 }

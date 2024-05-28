@@ -1,5 +1,5 @@
 ﻿<script setup>
-import {onMounted, defineProps, watch,defineEmits} from "vue";
+import {onMounted, defineProps, watch, defineEmits, ref} from "vue";
 import cytoscape from "cytoscape";
 import fcose from 'cytoscape-fcose';
 import {CButton} from "@coreui/vue/dist/esm/components/button";
@@ -8,6 +8,7 @@ cytoscape.use( fcose );
 let cy = null;
 const props = defineProps(['projectId', 'refreshSchema']);
 const emit = defineEmits(['afterLoad']);
+const visible = ref(true);
 watch(props, () =>{
   if (cy === null || props["refreshSchema"] === false) {
     return
@@ -30,6 +31,8 @@ const loadGraph = function (){
     body: JSON.stringify(props['projectId']),
   }).then(async response => {
     const data = await response.json();
+    
+    visible.value = data.componentsPcb.length !== 0;
 
     // check for error response
     if (!response.ok) {
@@ -37,11 +40,11 @@ const loadGraph = function (){
       const error = (data && data.message) || response.statusText;
       console.log(error)
     }
-    console.log(data);
     data.componentsPcb.forEach((x) =>
         cy.add([{group: 'nodes',
           data: {
             id: x.designator,
+            label: x.designator +'\n'+x.height+'×'+x.width,
             type: "comp",
             img: RandPng(),
             width: x.width*10,
@@ -59,9 +62,7 @@ const loadGraph = function (){
         }
       }])
     }
-    console.log(cy.nodes()[0])
-    cy.layout({name: 'circle'}).run();
-    cy.layout({name: 'circle'}).stop();
+    zoom();
     emit("afterLoad");
   }).catch(error => {
     console.log( error);
@@ -73,25 +74,27 @@ const zoom = function (){
 }
 
 onMounted(()=>{
-  cy = window.cy = cytoscape({
-    container: document.getElementById('cy'),
+  let g = document.getElementById('cy');
+  cy = cytoscape({
+    container: g, 
 
     elements: [],
     style: cytoscape.stylesheet()
         .selector('edge')
         .css({
           'width': 5,
-          'line-color': 'black',
+          'line-color': '#b9775b',
           'content': 'data(label)',
           'font-size': '10px',
-          'color': 'white'
+          'color': 'black'
         })
         .selector('node')
         .css({
-          'label': 'data(id)',
+          'label': 'data(label)',
           'height': 'data(height)',
           'width': 'data(width)',
-          'content': 'data(id)',
+          'content': 'data(label)',
+          'text-wrap':"wrap",
           'background-fit': 'cover',
           'border-color': '#000',
           'border-width': 0,
@@ -132,18 +135,24 @@ onMounted(()=>{
 </script>
 
 <template>
-  <div id="cy" ></div>
-  <CButton @click ="zoom">Восстановить</CButton>
+  <div class="row justify-content-center" v-if="visible">
+    <div class="col-6 ">
+      <div id="cy"/> 
+    </div>
+    <div class="col-3">
+     <CButton @click ="zoom" color="primary" variant="outline">Восстановить</CButton>
+    </div>
+  </div>
+  <div v-if="!visible" >
+    Загрузите файл с проектом!
+  </div>
 </template>
 
 <style scoped>
 #cy {
-  position: fixed;
-  left: 25%;
   color: #d3d3d3;
   font: 12pt arial;
-  height: 600px;
-  width: 600px;
+  height: 650px;
   border: 1px solid #444444;
   background-color: #ffffff;
 }

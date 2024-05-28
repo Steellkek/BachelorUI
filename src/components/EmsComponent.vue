@@ -4,7 +4,7 @@ import { defineEmits, defineProps, onMounted, ref, watch} from "vue";
 import axios from "axios";
 
 const props = defineProps(['projectId', 'isRefreshEms']);
-const emit = defineEmits(['afterLoad']);
+const emit = defineEmits(['afterLoad', 'afterChange']);
 
 
 let functionalBlocks = ref([])
@@ -75,6 +75,7 @@ const createEms = function (){
         firstBlock.value = null;
         secondBlock.value = null;
         inputValue.value = null;
+        emit('afterChange');
       console.log(response)
   }).catch(error => {
     console.log(error);
@@ -95,6 +96,7 @@ const deleteEms = function (id){
     functionalBlocks.value.push(ems.value.filter(x => x.id === id)[0].functionalBlock1);
     functionalBlocks.value.push(ems.value.filter(x => x.id === id)[0].functionalBlock2);
     ems.value = ems.value.filter(x=>x.id !== id);
+    emit('afterChange');
     console.log(data);
   }).catch(error => {
     console.log( error);

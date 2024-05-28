@@ -1,15 +1,19 @@
 ﻿<script setup>
-import {defineProps, onMounted, ref} from "vue";
+import {defineEmits, defineProps, onMounted, ref, watch} from "vue";
 import {CButton} from "@coreui/vue/dist/esm/components/button";
 import {CFormInput} from "@coreui/vue/dist/esm/components/form";
 
 onMounted(()=>{
   getComponents();
 })
-const props = defineProps(['projectId', 'refreshPcb']);
+const props = defineProps(['projectId', 'refreshComponents']);
+
+const emit = defineEmits(['afterLoad', 'loadSolution']);
 
 let components = ref();
-
+watch(props, () =>{
+  getComponents();
+})
 const getComponents = () => {
   // eslint-disable-next-line no-unused-vars
   let responseComponents = fetch("https://localhost:44389/api/Schema/GetComponents", {
@@ -19,6 +23,7 @@ const getComponents = () => {
   }).then(async response => {
     const data = await response.json();
     components.value = data;
+    emit("afterLoad");
     console.log(data);
   }).catch(error => {
     console.log( error);
@@ -37,6 +42,8 @@ const updateSize = function(item){
   }).then(async response => {
     const data = await response.json();
     console.log(data);
+    emit("loadSolution")
+    alert("Размеры изменены!");
   }).catch(error => {
     console.log( error);
   });
@@ -54,7 +61,7 @@ const updateSize = function(item){
     <div class="col-3 border">
       Ширина
     </div>
-    <div class="col-1 border">
+    <div class="col-2 border">
       Действие
     </div>
   </div>
@@ -68,7 +75,7 @@ const updateSize = function(item){
     <div class="col-3 border">
       <CFormInput class="me-2" placeholder="Ширина" type="number" v-model.number="item.width" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
     </div>
-    <div class="col-1 border">
+    <div class="col-2 border">
       <CButton color="secondary" size="sm" @click="updateSize(item)">
         Изменить размер
       </CButton>

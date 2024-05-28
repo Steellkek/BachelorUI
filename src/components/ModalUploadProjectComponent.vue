@@ -7,7 +7,7 @@ import {defineProps, ref, watch, defineEmits} from "vue";
 import axios from "axios";
 
 let props = defineProps(['visibleStaticBackdropUpload','projectId']);
-let emit = defineEmits(['closeModal', 'choiceProject','afterUpload']);
+let emit = defineEmits(['closeModal','afterUpload','refComponent']);
 
 let visibleStaticBackdropUpload = ref(props["visibleStaticBackdropUpload"]);
 let input = ref(null)
@@ -49,6 +49,7 @@ const upload = async function() {
   isUploading.value = false;
   emit("closeModal");
   emit('afterUpload');
+  emit('refComponent');
 };
 
 const closeModal = function (){  

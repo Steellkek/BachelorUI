@@ -4,9 +4,10 @@ import {CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle} from "@core
 import {defineEmits, defineProps, ref, watch} from "vue";
 import {CForm, CFormInput} from "@coreui/vue/dist/esm/components/form";
 import {CButton} from "@coreui/vue/dist/esm/components/button";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 
 let props = defineProps(['visibleStaticBackdropStart', 'projectId']);
-let emit = defineEmits(['closeModal']);
+let emit = defineEmits(['closeModal'],['loadSolution']);
 
 let visibleStaticBackdropStart = ref(props["visibleStaticBackdropStart"]);
 
@@ -16,7 +17,7 @@ let rateMutation = ref(0.1);
 let rateCrossingover = ref(0.9);
 let rateIntermodule = ref(0.5);
 let rateEms = ref(0.5);
-
+let load = ref(true);
 const closeModal = function (){
   emit("closeModal");
 }
@@ -65,15 +66,19 @@ const startAlg = function (){
     rateEms: rateEms.value,
     projectId: props["projectId"]
   }
+  load.value = false;
   fetch("https://localhost:44389/api/Solution/StartAlg", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(x),
   }).then(async response => {
     const data = await response.json();
+    load.value = true;
     console.log(data);
+    emit("loadSolution");
+    closeModal()
   }).catch(error => {
-    console.log( error);
+    alert(error);
   });
 }
 </script>
@@ -103,6 +108,7 @@ const startAlg = function (){
         <CFormInput class="me-2" placeholder="% для критерия минимизации количества соединений" type="number" v-model.number="rateIntermodule"/>
         <h6>% для критерия ЭМ</h6>
         <CFormInput class="me-2" placeholder="% для критерия ЭМС" type="number" v-model.number="rateEms"/>
+        <LoadingComponent :is-loading="load"></LoadingComponent>
       </CForm>
     </CModalBody>
     <CModalFooter>

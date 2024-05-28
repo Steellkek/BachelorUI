@@ -1,17 +1,19 @@
 ﻿<script setup>
-import {onMounted, defineProps, watch} from "vue";
+import {onMounted, defineProps, watch, ref} from "vue";
 import cytoscape from "cytoscape";
 import {CButton} from "@coreui/vue/dist/esm/components/button";
+import {CButtonGroup} from "@coreui/vue/dist/esm/components/button-group";
 // eslint-disable-next-line no-unused-vars
 let cy3 = null;
-const props = defineProps(['projectId', 'refreshSchema']);
+const props = defineProps(['projectId', 'refreshSolution']);
 //const emit = defineEmits(['afterLoad']);
 watch(props, () =>{
-  if (cy3 === null || props["refreshSchema"] === false) {
+  if (cy3 === null || props["refreshSolution"] === false) {
     return
   }
   loadGraph();
 })
+const visible = ref(true);
 
 // eslint-disable-next-line no-unused-vars
 var el = ['pcb','pcb2','chip','processor','pcb3','cpu']
@@ -31,6 +33,7 @@ const loadGraph = function (){
   }).then(async response => {
     const data = await response.json();
 
+    visible.value = data.item1.length !== 0;
     // check for error response
     if (!response.ok) {
       // get error message from body or default to response statusText
@@ -38,6 +41,7 @@ const loadGraph = function (){
       console.log(error)
     }
     console.log(data);
+    let o = 1;
     data.item1.forEach((x) => 
       {
         cy3.add([{
@@ -46,7 +50,8 @@ const loadGraph = function (){
             id: "g" + x.id,
             width: x.width * 5,
             height: x.height * 5,
-            type: "module"
+            type: "module",
+            label: o++ +'\n'+x.height+'×'+x.width,
           }
         }])
         x.functionalBlocks.forEach((y) =>{
@@ -67,7 +72,7 @@ const loadGraph = function (){
                 type: "comp",
                 width:k.width * 10,
                 height: k.height * 10,
-                label: k.designator,
+                label: k.designator +'\n'+k.height+'×'+k.width,
                 img: RandPng(),
               }
             }])
@@ -93,7 +98,8 @@ const loadGraph = function (){
           id: 'e' + (i+1),
           source: "c" + data.item3[i].componentPcb1Id,
           target: "c" + data.item3[i].componentPcb2Id,
-          type: "connect"
+          type: "connect",
+          label: data.item3[i].countConnection,
         }
       }])
       zoom()
@@ -101,6 +107,9 @@ const loadGraph = function (){
   }).catch(error => {
     console.log( error);
   });
+}
+const downloadSolution = function (){
+  window.open("https://localhost:44389/api/Solution/download/"+ props['projectId']);
 }
 const zoom = function (){
   var layout = cy3.layout({
@@ -129,7 +138,9 @@ onMounted(()=>{
     style: cytoscape.stylesheet()
         .selector('node')        
         .css({
-          'shape' : 'rectangle'
+          'shape' : 'rectangle',
+          'content': 'data(label)',
+          'text-wrap':"wrap",
         })
         .selector('edge')
         .css({
@@ -137,8 +148,8 @@ onMounted(()=>{
         .selector('edge[type="connect"]')
         .css({
           'width': 2.5,
-          'line-color': 'black',
-          'content': 'data(label)',
+          'line-color': '#b9775b',
+          'content': 'data(label)',          
           'font-size': '5px',
           'color': 'black'
         })
@@ -156,9 +167,7 @@ onMounted(()=>{
           'width': 'data(width)',
           'background-opacity': 1,
           'background-color': 'green',
-          'text-wrap':"wrap",
           'font-size': '10px',
-          'content': 'data(id)',
         })
         .selector('node[type="func"]')
         .css({
@@ -171,7 +180,6 @@ onMounted(()=>{
         .css({
           'height': 'data(height)',
           'width': 'data(width)',
-          'content': 'data(label)',
           'background-fit': 'cover',
           'border-color': '#000',
           'border-width': 0,
@@ -211,18 +219,27 @@ onMounted(()=>{
 </script>
 
 <template>
-  <div id="cy3" ></div>
-  <CButton @click ="zoom">Восстановить</CButton>
+  <div class="row justify-content-center" v-if="visible">
+    <div class="col-6 ">
+      <div id="cy3"/>
+    </div>
+    <div class="col-3">
+      <CButtonGroup vertical role="group" aria-label="Vertical button group">
+        <CButton @click ="zoom" color="primary" variant="outline">Восстановить</CButton>
+        <CButton @click="downloadSolution" color="primary" variant="outline">Скачать решение</CButton>
+      </CButtonGroup>
+    </div>
+  </div>
+  <div v-if="!visible" >
+    Запустите проектную процедуру!
+  </div>
 </template>
 
 <style scoped>
 #cy3 {
-  position: fixed;
-  left: 25%;
   color: #d3d3d3;
   font: 12pt arial;
-  height: 600px;
-  width: 600px;
+  height: 650px;
   border: 1px solid #444444;
   background-color: #ffffff;
 }

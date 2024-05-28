@@ -1,5 +1,5 @@
 ﻿<template>
-  <h6>Проект:{{NameProject}}</h6>
+  <h6>{{NameProject}}</h6>
   <CDropdown>
     <CDropdownToggle color="primary">Меню</CDropdownToggle>
     <CDropdownMenu>
@@ -8,11 +8,8 @@
       <CDropdownItem href="#" @click="() => { visibleStaticBackdropUpload  = true }" variant="outline" :disabled= "projectId=== 0">Загрузить файл</CDropdownItem >
     </CDropdownMenu>
   </CDropdown>
-  <CButton @click="openStartAlg">
+  <CButton @click="openStartAlg" :disabled= "projectId=== 0" color="secondary">
     Запуск
-  </CButton>
-  <CButton @click="downloadSolution">
-    Скачать решение
   </CButton>
   <CNav variant="tabs" role="tablist">
     <CNavItem>
@@ -71,30 +68,30 @@
     </CNavItem>
   </CNav>
   <CTabContent v-if="projectId!==0">
-    <CTabPane role="tabpanel" aria-labelledby="home-tab" :visible="tabPaneActiveKey === 1">
-      <ScemaWindowComponent :refreshSchema = "refreshSchema" :projectId = "projectId" @afterLoad = "afterLoad"></ScemaWindowComponent>
+    <CTabPane role="tabpanel" aria-labelledby="home-tab" v-if="tabPaneActiveKey === 1"  :visible="tabPaneActiveKey === 1">
+      <ScemaWindowComponent :refreshSchema = "refreshSchema" :projectId = "projectId" @afterLoad = "afterLoadSchema"></ScemaWindowComponent>
     </CTabPane>
-    <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 2">
-      <PcbWindowComponent   :refreshPcb = "refreshPcb" :project-id = "projectId" @afterLoad = "afterLoad"></PcbWindowComponent>
+    <CTabPane role="tabpanel" aria-labelledby="profile-tab" v-if="tabPaneActiveKey === 2"  :visible="tabPaneActiveKey === 2">
+      <PcbWindowComponent   :refreshPcb = "refreshPcb" :project-id = "projectId" @afterLoad = "afterLoadPcb"></PcbWindowComponent>
     </CTabPane>
-    <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 3">
-      <SolutionWindowComponent :refreshSchema = "refreshSchema" :projectId = "projectId" @afterLoad = "afterLoad"></SolutionWindowComponent>
+    <CTabPane role="tabpanel" aria-labelledby="profile-tab" v-if="tabPaneActiveKey === 3"   :visible="tabPaneActiveKey === 3">
+      <SolutionWindowComponent :refreshSolution = "refreshSolution" :projectId = "projectId" @afterLoad = "afterLoadSolution"></SolutionWindowComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 4">
       <FunctionBlockComponent 
           :projectId = "projectId" 
           :refreshFunctional = "refreshFunctional" 
-          @afterLoad = "afterLoad" 
+          @afterLoad = "afterLoadFunc" 
           @refreshEms = "refreshEms" 
           @allComponentsInFunctionalBlocks = "allComponentsInFunctionalBlocks"
       >        
       </FunctionBlockComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 5">
-      <EmsComponent :projectId = "projectId" :isRefreshEms = "isRefreshEms" @afterLoad = "afterLoad"></EmsComponent>
+      <EmsComponent :projectId = "projectId" :isRefreshEms = "isRefreshEms" @afterLoad = "afterLoadEms" @afterChange = "afterChange"></EmsComponent>
     </CTabPane>
     <CTabPane role="tabpanel" aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 6">
-      <ComponentWindowComponent :projectId = "projectId" :isRefreshEms = "isRefreshEms" @afterLoad = "afterLoad"></ComponentWindowComponent>
+      <ComponentWindowComponent :projectId = "projectId" :refreshComponents = "refreshComponents" @afterLoad = "afterLoadComp" @loadSolution = "afterChange"></ComponentWindowComponent>
     </CTabPane>
   </CTabContent>
   <ModalCreateProjectComponent 
@@ -112,11 +109,13 @@
       :projectId = "projectId"
       @closeModal = "closeModal"
       @afterUpload = "afterUpload"
+      @refComponent = "refComponent"
   ></ModalUploadProjectComponent>
   <ModalStartAlgComponent
       :visibleStaticBackdropStart = "visibleStaticBackdropStart"
       :projectId = "projectId"
       @closeModal = "closeModal"
+      @loadSolution = "loadSolution"
   ></ModalStartAlgComponent>
 </template>
 
@@ -145,27 +144,53 @@ let refreshSchema = ref(false);
 let refreshFunctional = ref(false);
 let isRefreshEms = ref(false);
 let refreshPcb = ref(false);
+let refreshSolution = ref(false);
 let isAllComponentsInFunctionalBlocks = ref(false);
-let NameProject = ref("");
+let refreshComponents = ref(true);
+let NameProject = ref("Создайте или выберите проект!");
 
 let projectId = ref(0);
 
 const choiceProject = function (project){
   projectId.value = project.id;
-  NameProject.value = project.nameProject;
+  NameProject.value = "Проект" + project.nameProject;
   afterUpload();
 }
-const afterLoad = function (){
+const  afterLoadComp = function (){
+  refreshComponents.value = false;
+}
+const afterLoadSolution = function (){
+  refreshSolution.value = false;
+}
+const afterLoadPcb = function () {
+  refreshPcb.value = false;
+}
+const afterLoadSchema = function () {
   refreshSchema.value = false;
+}
+const afterLoadFunc = function () {
   refreshFunctional.value = false;
+}
+const afterLoadEms = function () {
   isRefreshEms.value = false;
-  refreshPcb.value = true;
+}
+const loadSolution = function (){
+  refreshSolution.value = true;
+}
+
+const afterChange = function (){
+  loadSolution();
+  refreshSchema.value = true;
+}
+const refComponent = function (){
+  refreshComponents.value = true;
 }
 const afterUpload = function (){
   refreshSchema.value = true;
   refreshFunctional.value = true;
   refreshEms();
   refreshPcb.value = true;
+  loadSolution();
 }
 const refreshEms = function (){
   isRefreshEms.value = true;
@@ -189,18 +214,4 @@ const openStartAlg = function (){
   visibleStaticBackdropStart.value = true;
 }
 
-const downloadSolution = function (){
-  window.open("https://localhost:44389/api/Solution/download/"+projectId.value);
-  // eslint-disable-next-line no-unused-vars
-/*  let responseComponents = fetch("https://localhost:44389/api/Solution/download", {
-    method: 'post',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(projectId.value),
-  }).then(async response => {
-    const data = await response.json();
-    console.log(data);
-  }).catch(error => {
-    console.log( error);
-  });*/
-}
 </script>
