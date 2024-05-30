@@ -110,10 +110,10 @@ let inputValue = ref(null)
   <div class="container" v-if="functionalBlocks.length > 0 || ems.length > 0">
     <div class="row justify-content-center">
       <div class="col-3 border">
-        Функциональный блок 1
+        Функциональный узел 1
       </div>
       <div class="col-3 border">
-        Функциональный блок 2
+        Функциональный узел 2
       </div>
       <div class="col-3 border">
         Значение
@@ -171,7 +171,7 @@ let inputValue = ref(null)
       </div>
     </div>
   </div>
-  <h6 v-if="functionalBlocks.length === 0 && ems.length === 0 ">Создайте функциональные блоки во вкладке "Функциональные блоки"</h6>
+  <h6 v-if="functionalBlocks.length === 0 && ems.length === 0 ">Создайте функциональные узлы во вкладке "Функциональные блоки"</h6>
 </template>
 
 <style scoped>

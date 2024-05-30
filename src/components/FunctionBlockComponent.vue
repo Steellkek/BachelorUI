@@ -118,10 +118,10 @@ const allComponentsInFunctionalBlocks = function () {
         <CFormInput 
             type="text" 
             v-if="checkComponents.length !== 0" 
-            placeholder="Название функционального блока"  
+            placeholder="Название функционального узла"  
             v-model="nameFunctionalBlock"></CFormInput>
         <CButton @click="createFunctionalBlock" color="secondary" :disabled="checkComponents.length === 0">
-          Создать функциональный блок
+          Создать функциональный узел
         </CButton>
       </div>
       <div class="col">
@@ -131,7 +131,7 @@ const allComponentsInFunctionalBlocks = function () {
               {{item.name}}
             </CAccordionHeader>
             <CAccordionBody>
-              <CButton color="secondary" @click="deleteFunctionalBlock(item.id)">Удалить функциональный блок</CButton>
+              <CButton color="secondary" @click="deleteFunctionalBlock(item.id)">Удалить функциональный узел</CButton>
               <CListGroup v-for="itemComponent in item.componentsPcb" :key = "itemComponent.id">
                 <CListGroupItem>{{itemComponent.designator}}</CListGroupItem>
               </CListGroup>

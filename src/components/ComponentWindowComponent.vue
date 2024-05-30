@@ -31,7 +31,7 @@ const getComponents = () => {
 }
 
 const updateSize = function(item){
-  if (!confirm("Обновить размеры компонента?")){
+  if (!confirm("Обновить размеры элемента?")){
     return;
   }
   // eslint-disable-next-line no-unused-vars

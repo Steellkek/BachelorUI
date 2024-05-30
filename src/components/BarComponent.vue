@@ -1,11 +1,18 @@
 ﻿<template>
   <h6>{{NameProject}}</h6>
   <CDropdown>
-    <CDropdownToggle color="primary">Меню</CDropdownToggle>
+    <CDropdownToggle color="primary">Проект</CDropdownToggle>
     <CDropdownMenu>
       <CDropdownItem href="#" @click="() => { visibleStaticBackdropCreate  = true }" variant="outline">Создать новый проект</CDropdownItem  >
       <CDropdownItem href="#" @click="() => { visibleStaticBackdropChoice  = true }" variant="outline">Открыть проект из БД</CDropdownItem >
       <CDropdownItem href="#" @click="() => { visibleStaticBackdropUpload  = true }" variant="outline" :disabled= "projectId=== 0">Загрузить файл</CDropdownItem >
+    </CDropdownMenu>
+  </CDropdown>
+  <CDropdown>
+    <CDropdownToggle color="info">Инфо</CDropdownToggle>
+    <CDropdownMenu>
+      <CDropdownItem href="#"  variant="outline">Помощь</CDropdownItem  >
+      <CDropdownItem href="#" @click="() => { visibleInfo  = true }" variant="outline">О программе</CDropdownItem >
     </CDropdownMenu>
   </CDropdown>
   <CButton @click="openStartAlg" :disabled= "projectId=== 0" color="secondary">
@@ -45,7 +52,7 @@
           :active="tabPaneActiveKey === 6"
           @click="() => {tabPaneActiveKey = 6}"
       >
-        Компоненты
+        Элементы
       </CNavLink>
     </CNavItem>
     <CNavItem>
@@ -54,7 +61,7 @@
           :active="tabPaneActiveKey === 4"
           @click="() => {tabPaneActiveKey = 4}"
       >
-        Функциональные блоки
+        Функциональные узлы
       </CNavLink>
     </CNavItem>
     <CNavItem>
@@ -117,6 +124,7 @@
       @closeModal = "closeModal"
       @loadSolution = "loadSolution"
   ></ModalStartAlgComponent>
+  <ModalInfoComponent :visible-info = "visibleInfo" @close-modal ="closeModal"></ModalInfoComponent>
 </template>
 
 <script setup>
@@ -135,6 +143,7 @@ import ModalStartAlgComponent from "@/components/ModalStartAlgComponent.vue";
 import PcbWindowComponent from "@/components/PcbWindowComponent.vue";
 import SolutionWindowComponent from "@/components/SolutionWindowComponent.vue";
 import ComponentWindowComponent from "@/components/ComponentWindowComponent.vue";
+import ModalInfoComponent from "@/components/ModalInfoComponent.vue";
 let tabPaneActiveKey = ref(1)
 let visibleStaticBackdropCreate = ref(false);
 let visibleStaticBackdropChoice = ref(false);
@@ -146,6 +155,7 @@ let isRefreshEms = ref(false);
 let refreshPcb = ref(false);
 let refreshSolution = ref(false);
 let isAllComponentsInFunctionalBlocks = ref(false);
+let visibleInfo = ref(false);
 let refreshComponents = ref(true);
 let NameProject = ref("Создайте или выберите проект!");
 
@@ -200,6 +210,7 @@ const closeModal = function () {
   visibleStaticBackdropChoice.value = false;
   visibleStaticBackdropUpload.value = false;
   visibleStaticBackdropStart.value = false;
+  visibleInfo.value = false;
 }
 
 const allComponentsInFunctionalBlocks = function (x){

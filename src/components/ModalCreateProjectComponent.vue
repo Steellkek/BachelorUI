@@ -55,7 +55,7 @@ watch(()=>
       <CModalTitle id="StaticBackdropExampleLabel">Создать новый проект</CModalTitle>
     </CModalHeader>
     <CModalBody>
-      <h1>Введите название проекта!</h1>
+      <h2>Введите название проекта!</h2>
     </CModalBody>
     <CForm class="d-flex">
       <CFormInput v-model = "input" class="me-2" placeholder="Название проекта"/>
