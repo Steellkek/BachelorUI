@@ -52,7 +52,7 @@ const startAlg = function (){
     alert("Введите КФ для критерия межмодульных связей от 0 до 1");
     return;
   }
-  let y = (rateMutation.value + rateCrossingover.value);
+  let y = (rateIntermodule.value + rateEms.value);
   if (y !== 1){
     alert("КФ для критерия ЭМС и КФ для критерия межмодульных связей должно == 1");
     return;

@@ -33,6 +33,8 @@ watch(()=>
       }
       for (let i = 0; i < data.length; i++) { 
         data[i].createdOn = new Date(data[i].createdOn).toLocaleString('ru', { timeZoneName: 'short' });
+        var n = data[i].createdOn.indexOf("GMT")
+        data[i].createdOn = data[i].createdOn.replace(data[i].createdOn.substring(n,n+8)," ")
       }
       items.value = data;
     }).catch(error => {
