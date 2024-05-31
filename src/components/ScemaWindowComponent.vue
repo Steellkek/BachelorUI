@@ -47,8 +47,8 @@ const loadGraph = function (){
             label: x.designator +'\n'+x.height+'×'+x.width,
             type: "comp",
             img: RandPng(),
-            width: x.width*10,
-            height: x.height*10
+            width: x.width === 0 ? 1 : x.width*10,
+            height: x.height === 0 ? 1 : x.height*10
         }
       }])
     );

@@ -163,7 +163,7 @@ let projectId = ref(0);
 
 const choiceProject = function (project){
   projectId.value = project.id;
-  NameProject.value = "Проект" + project.nameProject;
+  NameProject.value = "Проект:" + project.nameProject;
   afterUpload();
 }
 const  afterLoadComp = function (){
