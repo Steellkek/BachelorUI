@@ -114,20 +114,17 @@ const downloadSolution = function (){
 const zoom = function (){
   var layout = cy3.layout({
     name: 'fcose',
-    quality: "proof",
-    randomize: true,
+    quality: "default",
     animate: false,
-    animationDuration: 1000,
-    animationEasing: undefined,
-    fit: true,
-    padding: 30,
     nestingFactor: 0.1,
-    gravityRangeCompound: 1,
-    initialEnergyOnIncremental: 1,
-    tilingPaddingVertical: 10,
-    tilingPaddingHorizontal: 10,
+    gravityRangeCompound: 0.1,
+    gravityCompound: 0.1,
+    gravityRange: 10,
+    initialEnergyOnIncremental: 0.1,
+    gravity: 1
   });
   layout.run();
+  layout.stop();
 }
 
 onMounted(()=>{
