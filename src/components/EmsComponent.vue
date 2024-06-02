@@ -27,7 +27,7 @@ onMounted(() =>{
 
 function getData() {
   // eslint-disable-next-line no-unused-vars
-  let responseFunctionalBlocks = fetch("https://localhost:44389/api/Schema/GetFunctionalBlocks", {
+  let responseFunctionalBlocks = fetch(process.env.VUE_APP_API+"/api/Schema/GetFunctionalBlocks", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
@@ -41,7 +41,7 @@ function getData() {
   });
 
   // eslint-disable-next-line no-unused-vars
-  let responseEms = fetch("https://localhost:44389/api/Ems/GetEmsList", {
+  let responseEms = fetch(process.env.VUE_APP_API+"/api/Ems/GetEmsList", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
@@ -65,7 +65,7 @@ const createEms = function (){
   formData.append("functionalBlockId2", secondBlock.value);
   formData.append("valueEms", inputValue.value);
   formData.append("projectId", props['projectId']);
-  axios.post("https://localhost:44389/api/Ems/CreateEms", formData,
+  axios.post(process.env.VUE_APP_API+"/api/Ems/CreateEms", formData,
       {
         headers: {
           "Content-Type": "Multipart / Form-Data"
@@ -87,7 +87,7 @@ const deleteEms = function (id){
   formData.append("emsId", id);
   
   // eslint-disable-next-line no-unused-vars
-  let responseEms = fetch("https://localhost:44389/api/Ems/DeleteEmsById", {
+  let responseEms = fetch(process.env.VUE_APP_API+"/api/Ems/DeleteEmsById", {
     method: 'delete',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(id),

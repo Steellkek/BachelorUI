@@ -19,7 +19,7 @@ const createProject = async function(){
   if (!confirm("Прошлый проект будет закрыт, вы согласны?")){
     return;
   }
-  let response = await fetch("https://localhost:44389/api/Project/CreateProject", {
+  let response = await fetch(process.env.VUE_APP_API+"/api/Project/CreateProject", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(input.value)

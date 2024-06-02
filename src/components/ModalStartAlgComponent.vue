@@ -67,7 +67,7 @@ const startAlg = function (){
     projectId: props["projectId"]
   }
   load.value = false;
-  fetch("https://localhost:44389/api/Solution/StartAlg", {
+  fetch(process.env.VUE_APP_API+"/api/Solution/StartAlg", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(x),

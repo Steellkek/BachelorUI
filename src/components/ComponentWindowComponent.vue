@@ -16,7 +16,7 @@ watch(props, () =>{
 })
 const getComponents = () => {
   // eslint-disable-next-line no-unused-vars
-  let responseComponents = fetch("https://localhost:44389/api/Schema/GetComponents", {
+  let responseComponents = fetch(process.env.VUE_APP_API+"/api/Schema/GetComponents", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
@@ -35,7 +35,7 @@ const updateSize = function(item){
     return;
   }
   // eslint-disable-next-line no-unused-vars
-  let responseComponents = fetch("https://localhost:44389/api/Schema/UpdateComponent", {
+  let responseComponents = fetch(process.env.VUE_APP_API+"/api/Schema/UpdateComponent", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(item),

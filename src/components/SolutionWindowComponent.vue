@@ -26,7 +26,7 @@ const RandPng = function () {
 const loadGraph = function (){
   cy3.remove(cy3.elements());
   // eslint-disable-next-line no-unused-vars
-  let response = fetch("https://localhost:44389/api/Solution/GetSolution", {
+  let response = fetch(process.env.VUE_APP_API+"/api/Solution/GetSolution", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
@@ -109,7 +109,7 @@ const loadGraph = function (){
   });
 }
 const downloadSolution = function (){
-  window.open("https://localhost:44389/api/Solution/download/"+ props['projectId']);
+  window.open(process.env.VUE_APP_API+"/api/Solution/download/"+ props['projectId']);
 }
 const zoom = function (){
   var layout = cy3.layout({

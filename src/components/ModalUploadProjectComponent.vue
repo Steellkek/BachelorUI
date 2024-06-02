@@ -34,7 +34,7 @@ const fileChange = function(fileList) {
 }
 const upload = async function() {
   // eslint-disable-next-line no-unused-vars
-  await axios.post("https://localhost:44389/api/Project/UploadProject", files.value,
+  await axios.post(process.env.VUE_APP_API+"/api/Project/UploadProject", files.value,
       {
         headers: {
           'Content-Type': 'multipart/form-data'

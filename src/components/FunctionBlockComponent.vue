@@ -28,7 +28,7 @@ watch(props, () =>{
 })
 const getFunctionalBlocks = () => {
   // eslint-disable-next-line no-unused-vars
-  let responseComponents = fetch("https://localhost:44389/api/Schema/GetComponentsForFunctionalBlocks", {
+  let responseComponents = fetch(process.env.VUE_APP_API+"/api/Schema/GetComponentsForFunctionalBlocks", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
@@ -41,7 +41,7 @@ const getFunctionalBlocks = () => {
     console.log( error);
   });
   // eslint-disable-next-line no-unused-vars
-  let responseFunctionalBlocks = fetch("https://localhost:44389/api/Schema/GetFunctionalBlocks", {
+  let responseFunctionalBlocks = fetch(process.env.VUE_APP_API+"/api/Schema/GetFunctionalBlocks", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
@@ -63,7 +63,7 @@ const createFunctionalBlock = function () {
   }
   formData.append("nameFunctionalBlock", nameFunctionalBlock.value);
   formData.append("projectId", props['projectId']);
-  axios.post("https://localhost:44389/api/Schema/CreateFunctionalBlock", formData,
+  axios.post(process.env.VUE_APP_API+"/api/Schema/CreateFunctionalBlock", formData,
       {
         headers: {
           "Content-Type": "Multipart / Form-Data"
@@ -85,7 +85,7 @@ const createFunctionalBlock = function () {
 
 const deleteFunctionalBlock = function (functionalBlockId) {
   // eslint-disable-next-line no-unused-vars
-  let responseFunctionalBlocks = fetch("https://localhost:44389/api/Schema/DeleteFunctionalBlock", {
+  let responseFunctionalBlocks = fetch(process.env.VUE_APP_API+"/api/Schema/DeleteFunctionalBlock", {
     method: 'delete',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(functionalBlockId),

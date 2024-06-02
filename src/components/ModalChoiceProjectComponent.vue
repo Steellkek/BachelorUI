@@ -20,7 +20,7 @@ watch(()=>
   if (visibleStaticBackdropChoice.value === true)
   {
     // eslint-disable-next-line no-unused-vars
-    let response = fetch("https://localhost:44389/api/Project/GetListProject", {
+    let response = fetch(process.env.VUE_APP_API+"/api/Project/GetListProject", {
       method: 'get',
     }).then(async response => {
       const data = await response.json();

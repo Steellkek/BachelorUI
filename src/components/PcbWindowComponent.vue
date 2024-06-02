@@ -18,7 +18,7 @@ const visible = ref(true);
 const loadGraph = function (){
   cy2.remove(cy2.elements());
   // eslint-disable-next-line no-unused-vars
-  let response = fetch("https://localhost:44389/api/Pcb/GetPcb", {
+  let response = fetch(process.env.VUE_APP_API+"/api/Pcb/GetPcb", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),

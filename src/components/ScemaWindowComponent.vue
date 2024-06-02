@@ -25,7 +25,7 @@ const RandPng = function () {
 const loadGraph = function (){
   cy.remove(cy.elements());
   // eslint-disable-next-line no-unused-vars
-  let response = fetch("https://localhost:44389/api/Schema/GetSchema", {
+  let response = fetch(process.env.VUE_APP_API+"/api/Schema/GetSchema", {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(props['projectId']),
